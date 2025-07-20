@@ -4,22 +4,21 @@ phases:
   install:
     runtime-versions:
       java: corretto8
+  pre_build:
     commands:
-      - echo Installing dependencies...
-      - yum install -y wget unzip
-      - echo Downloading Apache Tomcat...
-      - wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz -O tomcat.tar.gz
-      - mkdir -p /opt/tomcat
-      - tar -xvzf tomcat.tar.gz -C /opt/tomcat --strip-components=1
-      - chmod +x /opt/tomcat/bin/*.sh
+      - echo Logging in to AWS CodeArtifact...
+      - CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain nextwork --domain-owner <your_aws_account_id> --region us-east-2 --query authorizationToken --output text`
+      - export CODEARTIFACT_AUTH_TOKEN
   build:
     commands:
-      - echo Building project...
-      - mvn clean install
-
+      - echo Build started on `date`
+      - mvn clean install -s settings.xml
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Packaging artifacts...
+      - mvn package -s settings.xml
 artifacts:
   files:
-    - target/nextwork-web-project.war
-    - appspec.yml
-    - scripts/**/*
+    - target/*.war
   discard-paths: no
