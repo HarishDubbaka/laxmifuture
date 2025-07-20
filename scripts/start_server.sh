@@ -1,5 +1,11 @@
 #!/bin/bash
-sudo systemctl start tomcat.service
-sudo systemctl enable tomcat.service
-sudo systemctl start httpd.service
-sudo systemctl enable httpd.service
+#!/bin/bash
+
+# Start Apache HTTPD if installed
+if command -v httpd >/dev/null 2>&1; then
+  sudo service httpd start
+fi
+
+# Start Tomcat from its folder
+/opt/tomcat/bin/startup.sh
+
