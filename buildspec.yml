@@ -6,6 +6,12 @@ phases:
       java: corretto8
     commands:
       - echo Installing dependencies...
+      - yum install -y wget unzip
+      - echo Downloading Apache Tomcat...
+      - wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz -O tomcat.tar.gz
+      - mkdir -p /opt/tomcat
+      - tar -xvzf tomcat.tar.gz -C /opt/tomcat --strip-components=1
+      - chmod +x /opt/tomcat/bin/*.sh
   build:
     commands:
       - echo Building project...
