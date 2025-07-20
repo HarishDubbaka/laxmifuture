@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# Start Apache HTTPD (if installed)
-if command -v httpd >/dev/null 2>&1; then
-  sudo service httpd start
-fi
-
-# Start Tomcat manually (update path to your installation)
+# Start Tomcat if available
 if [ -f /opt/tomcat/bin/startup.sh ]; then
+  echo "Starting Tomcat..."
   sudo /opt/tomcat/bin/startup.sh
 else
-  echo "Tomcat not found in /opt/tomcat"
-  exit 1
+  echo "Tomcat not found at /opt/tomcat/bin/startup.sh"
+fi
+
+# Start httpd if available
+if systemctl list-units --type=service | grep -q "httpd.service"; then
+  echo "Starting httpd..."
+  sudo systemctl start httpd
+  sudo systemctl enable httpd
+else
+  echo "httpd.service not available on this host"
 fi
